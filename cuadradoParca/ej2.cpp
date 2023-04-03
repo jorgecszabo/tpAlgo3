@@ -2,9 +2,8 @@
 
 using namespace std;
 
-#define N 4
+#define N 3
 int numeroMagico = (N*N*N + N)/2; // Formula del numero magico
-int sumaGlobal = 0;
 int llamados = 0;
 
 list<vector<int>> cuadrados;
@@ -19,7 +18,7 @@ void printCuadrado(vector<int> cua) {
     }
     cout << "--- --- --- \n";
 }
-
+/*
 bool esCuadradoMagico(int n, vector<int> cuadrado) {
     // cuadrados.push_back(cuadrado);
     // return true;
@@ -71,11 +70,13 @@ int contarCuadradosMagicosFB(int n) {
     fuerzaBruta(n, cuadrado, 0);
     return sumaGlobal;
 }
-
-void BT_podaMagica(int n, vector<int> cuadrado, int k) {
+*/
+int BT_podaMagica(int n, vector<int> cuadrado, vector<bool> usado, int k) {
     llamados++;
+    int cuadradosMagicos = 0;
     for (int i=1; i <= n*n; i++) {
-        if (count(cuadrado.begin(), cuadrado.end(), i) == 0) {
+        if (!usado[i]) {
+            usado[i] = true;
             cuadrado[k] = i;
             int fila = 0;
             int columna = 0;
@@ -86,46 +87,50 @@ void BT_podaMagica(int n, vector<int> cuadrado, int k) {
             }
             for (int j=0; j < n; j++) {
                 columna += cuadrado[k%n + j*n];
-            }
-            for (int j=0; j < n; j++) {
                 diagDes += cuadrado[j*(n+1)];
+                diagAsc += cuadrado[(n-1)*(j+1)];
             }
-            if (k == n*n-n) {
-                for (int j=0; j < n; j++) {
-                    diagAsc += cuadrado[(n-1)*(j+1)];
-                }
-                if (diagAsc != numeroMagico) {
-                    goto jaja;
-                }
+            // Cotas inferiores.
+            vector<int> nMayoresNoUsados;
+            for (int i=n*n; i >= 0; i--) {
+                if (!usado[i]) nMayoresNoUsados.push_back(i);
             }
-            if ((k%n == n-1 && fila != numeroMagico) ||
-                (k >= (n*n-n) && columna != numeroMagico)) {
+            int cotaInfFila = numeroMagico;
+            for (int i=0; i < (n - k%n - 1); i++) {
+                cotaInfFila -= nMayoresNoUsados[i];
+            }
+            // Aplico podas
+            if ((fila < cotaInfFila) ||
+                ((k == n*n-n) && diagAsc != numeroMagico) ||
+                (k%n == n-1 && fila != numeroMagico) ||
+                (k >= (n*n-n) && columna != numeroMagico) ||
+                (k == n*n-1 && diagDes != numeroMagico)
+                ) {
                 ;
             } else if ( fila <= numeroMagico &&
                         columna <= numeroMagico &&
                         diagAsc <= numeroMagico &&
                         diagDes <= numeroMagico) {
                 if (k == n*n-1) {
-                    sumaGlobal += esCuadradoMagico(n, cuadrado);
-
+                    cuadradosMagicos += 1;
+                    cuadrados.push_back(cuadrado);
                 } else {
-                    BT_podaMagica(n, cuadrado, k+1);
+                    cuadradosMagicos += BT_podaMagica(n, cuadrado, usado, k+1);
                 }
             }
-            jaja:
+            // jaja:
             cuadrado[k] = 0;
+            usado[i] = false;
         }
     }
+    return cuadradosMagicos;
 }
 
 int contarCuadradosMagicos_PODA(int n) {
     vector<int> cuadrado (n*n, 0);
-    sumaGlobal = 0;
-    BT_podaMagica(n, cuadrado, 0);
-    return sumaGlobal;
+    vector<bool> usado(n*n+1, false);
+    return BT_podaMagica(n, cuadrado, usado, 0);
 }
-
-
 
 int main() {
     // vector<int> test = {2,7,6,9,5,1,4,0,0};
@@ -140,5 +145,7 @@ int main() {
     // cout << "Sin podas tomo: " << chrono::duration_cast<chrono::milliseconds>(t2-t1).count() << "ms" << endl;
     cout << "Con podas tomo: " << chrono::duration_cast<chrono::milliseconds>(t3-t2).count() << "ms" << endl << endl;
 
-    printCuadrado(cuadrados.front());
+    for (vector<int> cuad : cuadrados) {
+        printCuadrado(cuad);
+    }
 }
