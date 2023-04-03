@@ -73,11 +73,12 @@ bool isItMagic(const vector<vector<int>> &matrix) {
 
 int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, int i, int j) {
     iter++;
-    if (j == n && i == n - 1) // Llegamos al fin de la matrix
+    if (j == n && i == n - 1)  { // Llegamos al fin de la matrix
         if (isItMagic(matrix)) {
             solutions.push_back(matrix); // Guardo la solución correcta
             return 1;
-        }
+        } else return 0;
+    }
     int rowSum = sumRowUntilj(matrix, i, j);
     int colSum = sumColUntili(matrix, i, j);
     int diagonalSum = diagSumUntilij(matrix, i, j);
