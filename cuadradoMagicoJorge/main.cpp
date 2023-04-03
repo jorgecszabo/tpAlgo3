@@ -4,6 +4,8 @@
 using namespace std;
 const int n = 3;
 const int k = (n * n * n + n) / 2;
+int prevRowSum = 0;
+int prevColSum[n] = {0};
 
 vector<vector<vector<int>>> solutions;
 
@@ -33,12 +35,60 @@ int sumColUntili(const vector<vector<int>> &matrix, int i, int j) {
         res += matrix[idx][j];
     return res;
 }
-
+/*
 int diagSumUntilij(const vector<vector<int>> &matrix, int i, int j) {
     int res = 0;
     for (int idx = 0; idx < i || idx < j; idx++)
         res += matrix[idx][idx];
     return res;
+}*/
+
+int descDiagSum(const vector<vector<int>> &matrix) {
+    int res = 0;
+    for (int idx = 0; idx < matrix.size() && matrix[idx][idx] != 0; idx++)
+        res += matrix[idx][idx];
+    return res;
+}
+
+int ascDiagSum(const vector<vector<int>> &matrix) {
+    int res = 0;
+    for (int idx = 0; idx < matrix.size() && matrix[idx][matrix.size() - 1 - idx] != 0; idx++)
+        res += matrix[idx][matrix.size() - 1 - idx];
+    return res;
+}
+
+bool canCompleteRow(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j) {
+    int neededMins = matrix.size() - j;
+    vector<int> mins;
+    for (int idx = 0; idx < isThisNumberUsed.size() && neededMins > 0; idx++) {
+        if (isThisNumberUsed[idx] == false) {
+            mins.push_back(idx + 1);
+            neededMins--;
+        }
+    }
+    int sum = 0;
+    for (int idx = 0; idx < j; idx++)
+        sum += matrix[i][idx];
+    for (int e : mins)
+        sum += e;
+    return sum <= k;
+}
+
+bool canCompleteCol(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j) {
+    int neededMins = matrix.size() - i;
+    vector<int> mins;
+    for (int idx = 0; idx < isThisNumberUsed.size() && neededMins > 0; idx++) {
+        if (isThisNumberUsed[idx] == false) {
+            mins.push_back(idx + 1);
+            neededMins--;
+        }
+    }
+    int sum = 0;
+    for (int idx = 0; idx < i; idx++)
+        sum += matrix[idx][j];
+    for (int e : mins)
+        sum += e;
+    return sum <= k;
 }
 
 bool isItMagic(const vector<vector<int>> &matrix) {
@@ -79,15 +129,18 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
             return 1;
         } else return 0;
     }
-    int rowSum = sumRowUntilj(matrix, i, j);
-    int colSum = sumColUntili(matrix, i, j);
-    int diagonalSum = diagSumUntilij(matrix, i, j);
+    prevRowSum = j > 0 ? prevRowSum + matrix[i][j-1] : 0;
+    prevColSum[]
+    int ascDiagonalSum = ascDiagSum(matrix);
+    int descDiagonalSum = descDiagSum(matrix);
+    bool canComplete = canCompleteCol(matrix, isThisNumberUsed, i, j) && canCompleteRow(matrix, isThisNumberUsed, i, j);
+
     if (j == n) {
-        if (rowSum == k && colSum < k && diagonalSum < k)
+        if (prevRowSum != k && prevColSum[j] < k && ascDiagonalSum <= k && descDiagonalSum <= k)
             return cuadradoMagico(matrix, isThisNumberUsed, i + 1, 0);
         return 0;
     }
-    if (rowSum >= k || colSum >= k || diagonalSum >= k) //Pero no llegamos al final
+    if (rowSum >= k || colSum >= k || ascDiagonalSum > k || descDiagonalSum > k || !canComplete) //Pero no llegamos al final
         return 0;
     int res = 0;
     // Notar que las soluciones se intentan en orden y se guardan en orden
