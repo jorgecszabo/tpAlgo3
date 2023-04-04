@@ -19,12 +19,21 @@ void printMatrix(vector<vector<int>> &matrix) { // ROBA2 DE GEEKS4GEEKS
     cout << "END OF MATRIX" << endl;
 }
 
-bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j, int rowSum, const vector<int> &colSums) {
+bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j, int rowSum, const vector<int> &colSums, const vector<int> &diagSums) {
     int neededMinsRow = n - j;
     int neededMinsCol = n - i;
+    int neededMinsDescDiag;
+    if (j > i) {
+        neededMinsDescDiag = i;
+    } else {
+        neededMinsDescDiag = max(0, i - 1);
+    }
+    neededMinsDescDiag = n-1-neededMinsDescDiag;
+
     int minSumRow = 0;
     int minSumCol = 0;
-    for (int idx = 0; idx < isThisNumberUsed.size() && (neededMinsRow > 0 || neededMinsCol > 0); idx++) {
+    int minSumDescDiag = 0;
+    for (int idx = 0; idx < isThisNumberUsed.size() && (neededMinsRow > 0 || neededMinsCol > 0 || neededMinsDescDiag > 0); idx++) {
         if (isThisNumberUsed[idx] == false) {
             if (neededMinsRow > 0) {
                 minSumRow += idx + 1;
@@ -34,11 +43,16 @@ bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNu
                 minSumCol += idx + 1;
                 neededMinsCol--;
             }
+            if (neededMinsDescDiag > 0) {
+                minSumDescDiag += idx + 1;
+                neededMinsDescDiag--;
+            }
         }
     }
+    int descDiagSum = diagSums[0] + minSumDescDiag;
     rowSum += minSumRow;
     int colSum = colSums[j] + minSumCol;
-    return rowSum <= k && colSum <= k;
+    return rowSum <= k && colSum <= k && descDiagSum <= k;
 }
 
 int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, int i, int j, int rowSum, vector<int> &colSums, vector<int> &diagSums) {
@@ -65,7 +79,7 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
 
     if (matrix[n-1][0] == 0 && diagSums[1] == k) return 0; // Si una diagonal es k pero no la completé
 
-    if (!canComplete(matrix, isThisNumberUsed, i, j, rowSum, colSums)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
+    if (!canComplete(matrix, isThisNumberUsed, i, j, rowSum, colSums, diagSums)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
 
     int res = 0;
     // Notar que las soluciones se intentan en orden y se guardan en orden
