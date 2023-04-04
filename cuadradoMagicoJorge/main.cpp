@@ -2,10 +2,8 @@
 #include <vector>
 
 using namespace std;
-const int n = 3;
+const int n = 4;
 const int k = (n * n * n + n) / 2;
-int prevRowSum = 0;
-int prevColSum[n] = {0};
 
 vector<vector<vector<int>>> solutions;
 
@@ -21,134 +19,67 @@ void printMatrix(vector<vector<int>> &matrix) { // ROBA2 DE GEEKS4GEEKS
     cout << "END OF MATRIX" << endl;
 }
 
-
-int sumRowUntilj(const vector<vector<int>> &matrix, int i, int j) {
-    int res = 0;
-    for (int idx = 0; idx < j; idx++)
-        res += matrix[i][idx];
-    return res;
-}
-
-int sumColUntili(const vector<vector<int>> &matrix, int i, int j) {
-    int res = 0;
-    for (int idx = 0; idx < i; idx++)
-        res += matrix[idx][j];
-    return res;
-}
-/*
-int diagSumUntilij(const vector<vector<int>> &matrix, int i, int j) {
-    int res = 0;
-    for (int idx = 0; idx < i || idx < j; idx++)
-        res += matrix[idx][idx];
-    return res;
-}*/
-
-int descDiagSum(const vector<vector<int>> &matrix) {
-    int res = 0;
-    for (int idx = 0; idx < matrix.size() && matrix[idx][idx] != 0; idx++)
-        res += matrix[idx][idx];
-    return res;
-}
-
-int ascDiagSum(const vector<vector<int>> &matrix) {
-    int res = 0;
-    for (int idx = 0; idx < matrix.size() && matrix[idx][matrix.size() - 1 - idx] != 0; idx++)
-        res += matrix[idx][matrix.size() - 1 - idx];
-    return res;
-}
-
-bool canCompleteRow(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j) {
-    int neededMins = matrix.size() - j;
-    vector<int> mins;
-    for (int idx = 0; idx < isThisNumberUsed.size() && neededMins > 0; idx++) {
+bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j, int rowSum, const vector<int> &colSums) {
+    int neededMinsRow = n - j;
+    int neededMinsCol = n - i;
+    int minSumRow = 0;
+    int minSumCol = 0;
+    for (int idx = 0; idx < isThisNumberUsed.size() && (neededMinsRow > 0 || neededMinsCol > 0); idx++) {
         if (isThisNumberUsed[idx] == false) {
-            mins.push_back(idx + 1);
-            neededMins--;
+            if (neededMinsRow > 0) {
+                minSumRow += idx + 1;
+                neededMinsRow--;
+            }
+            if (neededMinsCol > 0) {
+                minSumCol += idx + 1;
+                neededMinsCol--;
+            }
         }
     }
-    int sum = 0;
-    for (int idx = 0; idx < j; idx++)
-        sum += matrix[i][idx];
-    for (int e : mins)
-        sum += e;
-    return sum <= k;
+    rowSum += minSumRow;
+    int colSum = colSums[j] + minSumCol;
+    return rowSum <= k && colSum <= k;
 }
 
-bool canCompleteCol(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j) {
-    int neededMins = matrix.size() - i;
-    vector<int> mins;
-    for (int idx = 0; idx < isThisNumberUsed.size() && neededMins > 0; idx++) {
-        if (isThisNumberUsed[idx] == false) {
-            mins.push_back(idx + 1);
-            neededMins--;
-        }
-    }
-    int sum = 0;
-    for (int idx = 0; idx < i; idx++)
-        sum += matrix[idx][j];
-    for (int e : mins)
-        sum += e;
-    return sum <= k;
-}
-
-bool isItMagic(const vector<vector<int>> &matrix) {
-    for (int i = 0; i < matrix.size(); i++) {
-        int target = 0;
-        for (int j = 0; j < matrix.size(); j++)
-            target += matrix[i][j];
-        if (target != k)
-            return false;
-    }
-    for (int j = 0; j < matrix.size(); j++) {
-        int target = 0;
-        for (int i = 0; i < matrix.size(); i++)
-            target += matrix[i][j];
-        if (target != k)
-            return false;
-    }
-    int target = 0;
-    for (int i = 0; i < matrix.size(); i++) {
-        target += matrix[i][i];
-    }
-    if (target != k)
-        return false;
-    target = 0;
-    for (int i = 0; i < matrix.size(); i++) {
-        target += matrix[i][matrix.size() - 1 - i];
-    }
-    if (target != k)
-        return false;
-    return true;
-}
-
-int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, int i, int j) {
+int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, int i, int j, int rowSum, vector<int> &colSums, vector<int> &diagSums) {
     iter++;
-    if (j == n && i == n - 1)  { // Llegamos al fin de la matrix
-        if (isItMagic(matrix)) {
-            solutions.push_back(matrix); // Guardo la solución correcta
-            return 1;
-        } else return 0;
+    if (j == n && i == n - 1) { // Llegamos al final de la matrix
+        bool res = rowSum == k && colSums[j-1] == k && diagSums[0] == k && diagSums[1] == k;
+        if (res) solutions.push_back(matrix);
+        return res;
     }
-    prevRowSum = j > 0 ? prevRowSum + matrix[i][j-1] : 0;
-    prevColSum[]
-    int ascDiagonalSum = ascDiagSum(matrix);
-    int descDiagonalSum = descDiagSum(matrix);
-    bool canComplete = canCompleteCol(matrix, isThisNumberUsed, i, j) && canCompleteRow(matrix, isThisNumberUsed, i, j);
+    if (j == n) { // Bajar a la siguiente fila
+        if (rowSum == k && colSums[j] < k && diagSums[0] <= k && diagSums[1] <= k)
+            return cuadradoMagico(matrix, isThisNumberUsed, i + 1, 0, 0, colSums, diagSums);
+        return 0;
+    }
+    if (i == n-1 && j != 0 && colSums[j-1] != k) return 0; // Si estoy en la ultila fila chequeo que las columnas estén bien
 
-    if (j == n) {
-        if (prevRowSum != k && prevColSum[j] < k && ascDiagonalSum <= k && descDiagonalSum <= k)
-            return cuadradoMagico(matrix, isThisNumberUsed, i + 1, 0);
-        return 0;
-    }
-    if (rowSum >= k || colSum >= k || ascDiagonalSum > k || descDiagonalSum > k || !canComplete) //Pero no llegamos al final
-        return 0;
+    if (j != 0 && colSums[j-1] > k) return 0; // Chequeo columnas
+
+    if (rowSum >= k) return 0; // Si me pasé con la fila
+
+    if (diagSums[0] > k || diagSums[1] > k) return 0; // Si me paso con una diagonal
+
+    if (matrix[n-1][n-1] == 0 && diagSums[0] == k) return 0; // Si una diagonal es k pero no la completé
+
+    if (matrix[n-1][0] == 0 && diagSums[1] == k) return 0; // Si una diagonal es k pero no la completé
+
+    if (!canComplete(matrix, isThisNumberUsed, i, j, rowSum, colSums)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
+
     int res = 0;
     // Notar que las soluciones se intentan en orden y se guardan en orden
     for (int idx = 0; idx < isThisNumberUsed.size(); idx++) {
         if (isThisNumberUsed[idx] == false) { // ¿Está en uso idx+1 en esta rama?
             matrix[i][j] = idx + 1;
             isThisNumberUsed[idx] = true; // idx + 1 en uso
-            res += cuadradoMagico(matrix, isThisNumberUsed, i, j + 1);
+            colSums[j] += idx + 1;
+            if (i == j) diagSums[0] += idx + 1;
+            if (n - 1 - i == j) diagSums[1] += idx + 1;
+            res += cuadradoMagico(matrix, isThisNumberUsed, i, j + 1, rowSum + idx + 1, colSums, diagSums);
+            colSums[j] -= idx + 1; // Backtrack
+            if (i == j) diagSums[0] -= idx + 1; // Backtrack
+            if (n - 1 - i == j) diagSums[1] -= idx + 1; // Backtrack
             matrix[i][j] = 0; //Backtrack
             isThisNumberUsed[idx] = false; // Backtrack
         }
@@ -159,10 +90,12 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
 int main() {
     vector<vector<int>> matrix(n, vector<int>(n, 0));
     vector<bool> isThisNumberUsed(n * n, false);
-    cout << cuadradoMagico(matrix, isThisNumberUsed, 0, 0) << " magic squares of size " << n << endl;
+    vector<int> colSums(n, 0);
+    vector<int> diagSums(2 , 0); // [0] es diagonal ascendente [1] es descendente
+    cout << cuadradoMagico(matrix, isThisNumberUsed, 0, 0, 0, colSums, diagSums) << " magic squares of size " << n << endl;
     cout << "Iterations: " << iter << endl;
-    for (auto sol: solutions)
-        printMatrix(sol);
+    //for (auto sol: solutions)
+    //    printMatrix(sol);
 
     return 0;
 }
