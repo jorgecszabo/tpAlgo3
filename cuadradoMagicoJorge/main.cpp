@@ -2,12 +2,15 @@
 #include <vector>
 
 using namespace std;
-const int n = 4;
-const int k = (n * n * n + n) / 2;
+int n = 0;
+int k = 0;
 
 vector<vector<vector<int>>> solutions;
+vector<int> diagSums(2 , 0); // [0] es diagonal ascendente [1] es descendente
+vector<int> colSums;
 
-unsigned long long int iter = 0;
+vector<vector<int>> matrix;
+vector<bool> isThisNumberUsed;
 
 void printMatrix(vector<vector<int>> &matrix) { // ROBA2 DE GEEKS4GEEKS
     for (auto &row: matrix) {
@@ -16,10 +19,9 @@ void printMatrix(vector<vector<int>> &matrix) { // ROBA2 DE GEEKS4GEEKS
         }
         cout << endl;
     }
-    cout << "END OF MATRIX" << endl;
 }
 
-bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNumberUsed, int i, int j, int rowSum, const vector<int> &colSums, const vector<int> &diagSums) {
+bool canComplete(int i, int j, int rowSum) {
     int neededMinsRow = n - j;
     int neededMinsCol = n - i;
     int neededMinsDescDiag;
@@ -55,8 +57,7 @@ bool canComplete(const vector<vector<int>> &matrix, const vector<bool> &isThisNu
     return rowSum <= k && colSum <= k && descDiagSum <= k;
 }
 
-int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, int i, int j, int rowSum, vector<int> &colSums, vector<int> &diagSums) {
-    iter++;
+int cuadradoMagico(int i, int j, int rowSum) {
     if (j == n && i == n - 1) { // Llegamos al final de la matrix
         bool res = rowSum == k && colSums[j-1] == k && diagSums[0] == k && diagSums[1] == k;
         if (res) solutions.push_back(matrix);
@@ -64,7 +65,7 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
     }
     if (j == n) { // Bajar a la siguiente fila
         if (rowSum == k && colSums[j-1] < k && diagSums[0] <= k && diagSums[1] <= k)
-            return cuadradoMagico(matrix, isThisNumberUsed, i + 1, 0, 0, colSums, diagSums);
+            return cuadradoMagico(i + 1, 0, 0);
         return 0;
     }
     if (i == n-1 && j != 0 && colSums[j-1] != k) return 0; // Si estoy en la ultila fila chequeo que las columnas estén bien
@@ -79,7 +80,7 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
 
     if (matrix[n-1][0] == 0 && diagSums[1] == k) return 0; // Si una diagonal es k pero no la completé
 
-    if (!canComplete(matrix, isThisNumberUsed, i, j, rowSum, colSums, diagSums)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
+    if (!canComplete(i, j, rowSum)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
 
     int res = 0;
     // Notar que las soluciones se intentan en orden y se guardan en orden
@@ -90,7 +91,7 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
             colSums[j] += idx + 1;
             if (i == j) diagSums[0] += idx + 1;
             if (n - 1 - i == j) diagSums[1] += idx + 1;
-            res += cuadradoMagico(matrix, isThisNumberUsed, i, j + 1, rowSum + idx + 1, colSums, diagSums);
+            res += cuadradoMagico(i, j + 1, rowSum + idx + 1);
             colSums[j] -= idx + 1; // Backtrack
             if (i == j) diagSums[0] -= idx + 1; // Backtrack
             if (n - 1 - i == j) diagSums[1] -= idx + 1; // Backtrack
@@ -101,15 +102,17 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
     return res;
 }
 
-int main() {
-    vector<vector<int>> matrix(n, vector<int>(n, 0));
-    vector<bool> isThisNumberUsed(n * n, false);
-    vector<int> colSums(n, 0);
-    vector<int> diagSums(2 , 0); // [0] es diagonal ascendente [1] es descendente
-    cout << cuadradoMagico(matrix, isThisNumberUsed, 0, 0, 0, colSums, diagSums) << " magic squares of size " << n << endl;
-    cout << "Iterations: " << iter << endl;
-    //for (auto sol: solutions)
-    //    printMatrix(sol);
-
+int main(int argc, char** argv) {
+    int solNumber;
+    cin >> n >> solNumber;
+    k = (n * n * n + n) / 2;
+    colSums = vector<int> (n, 0);
+    matrix = vector<vector<int>>(n, vector<int>(n, 0));
+    isThisNumberUsed = vector<bool>(n * n, false);
+    cuadradoMagico(0, 0, 0);
+    //cout << "There are " << solutions.size() << " magic squares of size " << n << endl;
+    if (solNumber > solutions.size())
+        cout << "-1" << endl;
+    else printMatrix(solutions[solNumber-1]);
     return 0;
 }
