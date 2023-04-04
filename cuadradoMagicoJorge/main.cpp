@@ -63,7 +63,7 @@ int cuadradoMagico(vector<vector<int>> &matrix, vector<bool> &isThisNumberUsed, 
         return res;
     }
     if (j == n) { // Bajar a la siguiente fila
-        if (rowSum == k && colSums[j] < k && diagSums[0] <= k && diagSums[1] <= k)
+        if (rowSum == k && colSums[j-1] < k && diagSums[0] <= k && diagSums[1] <= k)
             return cuadradoMagico(matrix, isThisNumberUsed, i + 1, 0, 0, colSums, diagSums);
         return 0;
     }
