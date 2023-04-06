@@ -1,0 +1,45 @@
+Sin poda inferior
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 275313733
+Tomo: 51353ms
+
+--- --- ---
+
+Poda inferior fila (metodo 1 version ineficiente)
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 225164875
+Tomo: 220056ms (+ 168703ms)
+
+
+Poda inferior fila metodo 2
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 225164875
+Tomo: 51304ms (- 9ms)
+
+--- --- ---
+
+Poda inferior fila y columna (met 2)
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 116203588
+Tomo: 30843ms (- 20510ms)
+
+--- --- --- 
+
+Poda inferior fila, col, diag desc (met 3 - con llamado a funcion)
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 95023045
+Tomo: 30636ms 
+
+--- --- --- 
+
+Poda inferior fila, col, diag desc, diag asc (met 3 - con llamado a funcion)
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 72805118
+Tomo: 27089ms
+
+--- --- --- 
+
+Idem anterior (usando un solo vector)
+Cantidad de cuadrados magicos: 7040
+Llamados recursivos: 72805118
+Tomo: 22136ms
