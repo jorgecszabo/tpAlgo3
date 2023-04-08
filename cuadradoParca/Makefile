@@ -1,10 +1,9 @@
 CXX := g++
-CXXFLAGS := -Wall -O3
+CXXFLAGS := -Wall -Wextra -pedantic -Ofast
 
-ej1: ej1.cpp
+cuadrados: ej1.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 .PHONY: clean
-
 clean:
-	rm ej1
+	rm -f cuadrados

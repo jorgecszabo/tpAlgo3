@@ -43,3 +43,20 @@ Idem anterior (usando un solo vector)
 Cantidad de cuadrados magicos: 7040
 Llamados recursivos: 72805118
 Tomo: 22136ms
+
+---
+
+--- --- ---
+N: 4, K: 4070
+Tomo: 9.88s
+--- --- ---
+
+Prueba de orden 5: primer cuadrado magico
+Llamados recursivos: 466380758
+Tomo: 204043ms
+1,  2,  13, 24, 25, 
+3,  22, 19, 6,  15, 
+23, 16, 10, 11, 5, 
+21, 7,  9,  20, 8, 
+17, 18, 14, 4,  12, 
+--- --- --- 

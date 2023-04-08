@@ -2,26 +2,23 @@
 
 using namespace std;
 
-#define N 4
-int numeroMagico = (N*N*N + N)/2; // Formula del numero magico
-int llamados = 0;
-
-vector<int> cuadrado(N*N);
-list<vector<int>> cuadrados;
+int N=0; 
+int K=0;
+int numeroMagico=0;
+vector<int> cuadrado;
+vector<int> res;
 
 void printCuadrado(vector<int> cua) {
-    cout << "-- cuadradito --" << endl;
     for (int i=0; i < N; i++) {
         for (int j=0; j < N; j++) {
-            cout << cua[i*N+j] << ", ";
+            cout << cua[i*N+j] << " ";
         }
         cout << "\n";
     }
-    cout << "--- --- --- \n";
 }
 
 
-int cota(int faltan, vector<bool>& usado, int& n) {
+inline int cota(int faltan, vector<bool>& usado, int n) {
     int cota = numeroMagico;
     int x = 0;
     int y = n*n;
@@ -35,9 +32,8 @@ int cota(int faltan, vector<bool>& usado, int& n) {
     return cota;
 }
 
-int BT(int n, vector<bool> usado, int k) {
-    llamados++;
-    int res = 0;
+void BT(int n, vector<bool>& usado, int k) {
+    if (K==0) return;
     for (int i=1; i <= n*n; i++) {
         if (!usado[i]) {
             cuadrado[k] = i; // Hago todos los calculos asumiendo que ya coloque el numero.
@@ -54,14 +50,15 @@ int BT(int n, vector<bool> usado, int k) {
                 diagAsc += cuadrado[(n-1)*(j+1)];
             }
             // Cotas inferiores.
-            int faltanFila = n - k%n - 1;
-            int cotaInfFila = cota(faltanFila, usado, n);
-            int faltanColumna = ceil(n - k/n - 1);
-            int cotaInfCol = cota(faltanColumna, usado, n);
+            int faltanFila        = n - k%n - 1;
+            int faltanColumna     = ceil(n - k/n - 1);
             int faltanDiagonalDes = n - ceil(k/(n+1)) - 1;
-            int cotaInfDiagDes = cota(faltanDiagonalDes, usado, n);
             int faltanDiagonalAsc = n - ceil(k/(n-1));
+
+            int cotaInfFila    = cota(faltanFila, usado, n);
+            int cotaInfCol     = cota(faltanColumna, usado, n);
             int cotaInfDiagAsc = cota(faltanDiagonalAsc, usado, n);
+            int cotaInfDiagDes = cota(faltanDiagonalDes, usado, n);
 
             // Aplico podas
             if ((fila < cotaInfFila) ||
@@ -74,37 +71,49 @@ int BT(int n, vector<bool> usado, int k) {
                 (k == n*n-1 && diagDes != numeroMagico) // Suma diagonal descendiente y suma distinto.
                 ) {
                 ;
-            } else if ( fila <= numeroMagico &&
-                        columna <= numeroMagico &&
-                        diagAsc <= numeroMagico &&
-                        diagDes <= numeroMagico) {
+            } else if (fila    <= numeroMagico &&
+                       columna <= numeroMagico &&
+                       diagAsc <= numeroMagico &&
+                       diagDes <= numeroMagico) {
                 if (k == n*n-1) {
-                    res += 1;
-                    cuadrados.push_back(cuadrado);
+                    //res += 1;
+                    //cantidad++;
+                    //if (cantidad == X) res.push_back(cuadrado);
+                    K--;
+                    if (K==0) res = cuadrado;
                 } else {
-                    res += BT(n, usado, k+1);
+                    //res += BT(n, usado, k+1);
+                    BT(n, usado, k+1);
                 }
             }
             cuadrado[k] = 0;
             usado[i] = false;
         }
     }
+    //return res;
+    //return 0;
+}
+
+// Encontrar el K esimo cuadrado magico de orden N.
+vector<int> cuadradoMagico(int n, int k) {
+    numeroMagico = (n*n*n + n)/2; // Formula del numero magico
+    N = n;
+    K = k;
+    cuadrado = vector<int>(N*N, 0);
+    vector<bool> usado(N*N+1, false);
+    BT(n, usado, 0);
     return res;
 }
 
-int contarCuadradosMagicosOrden(int n) {
-    vector<int> cuadrado (n*n, 0);
-    vector<bool> usado(n*n+1, false);
-    return BT(n, usado, 0);
-}
-
 int main() {
-    auto t1 = chrono::high_resolution_clock::now();
-    int cantidad = contarCuadradosMagicosOrden(N);
-    auto t2 = chrono::high_resolution_clock::now();
-    cout << "Cantidad de cuadrados magicos: " << cantidad << endl;
-    cout << "Llamados recursivos: " << llamados << endl;
-    cout << "Tomo: " << chrono::duration_cast<chrono::milliseconds>(t2-t1).count() << "ms" << endl << endl;
-    cout << "- Ejemplo -" << endl;
-    printCuadrado(cuadrados.front());
+    cin >> N >> K;
+    //auto t1 = chrono::high_resolution_clock::now();
+    vector<int> resultado = cuadradoMagico(N, K);
+    //auto t2 = chrono::high_resolution_clock::now();
+    //cout << "Cantidad de cuadrados magicos: " << cantidad << endl;
+    //cout << "Llamados recursivos: " << llamados << endl;
+    //cout << "Tomo: " << chrono::duration_cast<chrono::milliseconds>(t2-t1).count() << "ms" << endl << endl;
+    //cout << "- Res -" << endl;
+    //printCuadrado(cuadrados.front());
+    printCuadrado(res);
 }
