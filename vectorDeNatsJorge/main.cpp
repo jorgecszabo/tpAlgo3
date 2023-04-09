@@ -28,7 +28,7 @@ long long int aPowbModc(long long int a, int b, int c) { // Hago esto pq sino la
 
 bool canReachTarget(int i, long long int prevRes) {
     if (i == n) return prevRes == r;
-    if (cache[i][m + prevRes] != UNDEFINED) return cache[i][prevRes] == TRUE;
+    if (cache[i][m + prevRes] != UNDEFINED) return cache[i][m + prevRes] == TRUE;
     bool res = false;
     res = res || canReachTarget(i+1, (prevRes + v[i]) % m);
     res = res || canReachTarget(i+1, (prevRes * v[i]) % m);
