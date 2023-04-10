@@ -18,7 +18,7 @@ unsigned long long int iter = 0;
 vector<vector<tristate>> cache(n, vector<tristate>(2*m, UNDEFINED));
 
 int aPowbModc(int a, int b, int c) {
-    long long int res = 1;
+    int res = 1;
     a = a % c;
     while (b > 0) {
         res = (res * a) % c; // Consultar apunte Álgebra I :)
