@@ -17,16 +17,17 @@ enum tristate {
 unsigned long long int iter = 0;
 vector<vector<tristate>> cache(n, vector<tristate>(2*m, UNDEFINED));
 
-long long int aPowbModc(long long int a, int b, int c) { // Hago esto pq sino la potencia se puede ir a un número gigantesco
+int aPowbModc(int a, int b, int c) {
     long long int res = 1;
+    a = a % c;
     while (b > 0) {
-        res = (res * a) % c; // Gracias por tanto profes de Álgebra I :)
+        res = (res * a) % c; // Consultar apunte Álgebra I :)
         b--;
     }
     return res;
 }
 
-bool canReachTarget(int i, long long int prevRes) {
+bool canReachTarget(int i, int prevRes) {
     if (i == n) return prevRes == r;
     if (cache[i][m + prevRes] != UNDEFINED) return cache[i][m + prevRes] == TRUE;
     bool res = false;
