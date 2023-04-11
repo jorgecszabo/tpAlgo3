@@ -9,11 +9,15 @@ vector<int> cuadrado;
 vector<int> res;
 
 void printCuadrado(vector<int> cua) {
-    for (int i=0; i < N; i++) {
-        for (int j=0; j < N; j++) {
-            cout << cua[i*N+j] << " ";
+    if (cua.size() == 0) {
+        cout << "-1" << endl;
+    } else {
+        for (int i=0; i < N; i++) {
+            for (int j=0; j < N; j++) {
+                cout << cua[i*N+j] << " ";
+            }
+            cout << "\n";
         }
-        cout << "\n";
     }
 }
 

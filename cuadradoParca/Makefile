@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Wall -Wextra -pedantic -Ofast
+CXXFLAGS := -O2
 
 cuadrados: ej1.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
