@@ -20,7 +20,7 @@ bool canReachTarget(int i, vector<bool> &cachePrev, vector<bool> &cacheCurr, con
     cachePrev[m + aPowbModc(v[i], v[i+1], m)] = true;
     i += 2;
     while (i < n) {
-        for (bool e : cacheCurr) e = false;
+        for (int idx = 0; idx < 2*m; idx++) cacheCurr[idx] = false;
         for (int idx = 0; idx < 2*m; idx++) {
             if (cachePrev[idx]) {
                 int prevRes = idx - m; // Para poder representar valores negativos
@@ -42,7 +42,7 @@ int main() {
     int r = 27936; // (4^4^7 mod 100000)
     const int m = 100000;
 
-    vector<bool> cacheCurr(2*m, false);
+    vector<bool> cacheCurr(2*m); // Igual me lo limpia el ciclo
     vector<bool> cachePrev(2*m, false);
     std::cout << canReachTarget(0, cachePrev, cacheCurr, v, n, m, r) << std::endl;
     return 0;
