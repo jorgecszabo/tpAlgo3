@@ -19,8 +19,13 @@ int aPowbModc(int a, int b, int c) { // Hago esto pq sino la potencia se puede i
     return res;
 }
 
+// Esta funcion es necesaria ya que la funcion % de c++ deja el numero en negativo si el original es negativo.
+int aModb (int a, int b) {
+    return (a % b + b) % b;
+}
+
 bool solve(int i, int w, int n, int r, int m, vector<int>& v) {
-    if (i == n) return (((w+r) % m) == r);
+    if (i == n) return (aModb(w,m) == r);
     pair<int, int> par = make_pair(i, w);
     if (memo.count(par) == 0) {
         bool res =  solve(i+1, w - v[i], n, r, m, v) ||
