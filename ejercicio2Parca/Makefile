@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -O2 -Wall
+CXXFLAGS = -std=c++11 -O0 -Wall -pedantic -g
 
 SRCS = main.cpp
 OBJS = ${SRCS:.cpp=.o}
@@ -16,3 +16,4 @@ ${MAIN}: ${OBJS} ${HEADERS}
 
 clean:
 	${RM} ${PROGS} ${OBJS} ${MAIN} *.o *~
+	${RM} .gdb_history
