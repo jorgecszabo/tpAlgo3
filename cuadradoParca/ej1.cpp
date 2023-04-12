@@ -2,19 +2,32 @@
 
 using namespace std;
 
-int N=0; 
+int n=0; 
 int K=0;
 int numeroMagico=0;
 vector<int> cuadrado;
 vector<int> res;
+vector<bool> usado(0);
+
+// Sumas parciales. FILA, COLUMNA, Diagonal Ascendente, Diagonal Descendiente
+vector<int> sumF;
+vector<int> sumC;
+int sumDA;
+int sumDD;
+
+// Cantidad llenada. FILA, COLUMNA, Diagonal Ascendente, Diagonal Descendiente
+vector<int> faltanF;
+vector<int> faltanC;
+int faltanDA;
+int faltanDD;
 
 void printCuadrado(vector<int> cua) {
     if (cua.size() == 0) {
         cout << "-1" << endl;
     } else {
-        for (int i=0; i < N; i++) {
-            for (int j=0; j < N; j++) {
-                cout << cua[i*N+j] << " ";
+        for (int i=0; i < n; i++) {
+            for (int j=0; j < n; j++) {
+                cout << cua[i*n+j] << " ";
             }
             cout << "\n";
         }
@@ -36,7 +49,7 @@ inline int cota(int faltan, vector<bool>& usado, int n) {
     return cota;
 }
 
-void BT(int n, vector<bool>& usado, int k) {
+void hallarCuadrado(int k) {
     if (K==0) return;
     for (int i=1; i <= n*n; i++) {
         if (!usado[i]) {
@@ -80,44 +93,30 @@ void BT(int n, vector<bool>& usado, int k) {
                        diagAsc <= numeroMagico &&
                        diagDes <= numeroMagico) {
                 if (k == n*n-1) {
-                    //res += 1;
-                    //cantidad++;
-                    //if (cantidad == X) res.push_back(cuadrado);
                     K--;
                     if (K==0) res = cuadrado;
                 } else {
                     //res += BT(n, usado, k+1);
-                    BT(n, usado, k+1);
+                    hallarCuadrado(k+1);
                 }
             }
             cuadrado[k] = 0;
             usado[i] = false;
         }
     }
-    //return res;
-    //return 0;
 }
 
 // Encontrar el K esimo cuadrado magico de orden N.
-vector<int> cuadradoMagico(int n, int k) {
+vector<int> cuadradoMagico() {
     numeroMagico = (n*n*n + n)/2; // Formula del numero magico
-    N = n;
-    K = k;
-    cuadrado = vector<int>(N*N, 0);
-    vector<bool> usado(N*N+1, false);
-    BT(n, usado, 0);
+    cuadrado = vector<int>(n*n, 0);
+    vector<bool> usado(n*n+1, false);
+    hallarCuadrado(0);
     return res;
 }
 
 int main() {
-    cin >> N >> K;
-    //auto t1 = chrono::high_resolution_clock::now();
-    vector<int> resultado = cuadradoMagico(N, K);
-    //auto t2 = chrono::high_resolution_clock::now();
-    //cout << "Cantidad de cuadrados magicos: " << cantidad << endl;
-    //cout << "Llamados recursivos: " << llamados << endl;
-    //cout << "Tomo: " << chrono::duration_cast<chrono::milliseconds>(t2-t1).count() << "ms" << endl << endl;
-    //cout << "- Res -" << endl;
-    //printCuadrado(cuadrados.front());
+    cin >> n >> K;
+    vector<int> resultado = cuadradoMagico();
     printCuadrado(res);
 }
