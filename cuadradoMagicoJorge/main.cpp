@@ -4,8 +4,10 @@
 using namespace std;
 int n = 0;
 int k = 0;
+int foundSolutions = 0;
+int targetSolution = 0;
 
-vector<vector<vector<int>>> solutions;
+vector<vector<int>> solution;
 vector<int> diagSums(2 , 0); // [0] es diagonal ascendente [1] es descendente
 vector<int> colSums;
 
@@ -35,7 +37,7 @@ bool canComplete(int i, int j, int rowSum) {
     int minSumRow = 0;
     int minSumCol = 0;
     int minSumDescDiag = 0;
-    for (int idx = 0; idx < isThisNumberUsed.size() && (neededMinsRow > 0 || neededMinsCol > 0 || neededMinsDescDiag > 0); idx++) {
+    for (int idx = 0; idx < n*n && (neededMinsRow > 0 || neededMinsCol > 0 || neededMinsDescDiag > 0); idx++) {
         if (isThisNumberUsed[idx] == false) {
             if (neededMinsRow > 0) {
                 minSumRow += idx + 1;
@@ -57,41 +59,46 @@ bool canComplete(int i, int j, int rowSum) {
     return rowSum <= k && colSum <= k && descDiagSum <= k;
 }
 
-int cuadradoMagico(int i, int j, int rowSum) {
+void cuadradoMagico(int i, int j, int rowSum) {
+    if (foundSolutions == targetSolution) {
+        return;
+    }
+
     if (j == n && i == n - 1) { // Llegamos al final de la matrix
-        bool res = rowSum == k && colSums[j-1] == k && diagSums[0] == k && diagSums[1] == k;
-        if (res) solutions.push_back(matrix);
-        return res;
+        if (rowSum == k && colSums[j-1] == k && diagSums[0] == k && diagSums[1] == k) {
+            solution = matrix;
+            foundSolutions++;
+        }
+        return;
     }
     if (j == n) { // Bajar a la siguiente fila
         if (rowSum == k && colSums[j-1] < k && diagSums[0] <= k && diagSums[1] <= k)
             return cuadradoMagico(i + 1, 0, 0);
-        return 0;
+        return;
     }
-    if (i == n-1 && j != 0 && colSums[j-1] != k) return 0; // Si estoy en la ultila fila chequeo que las columnas estén bien
+    if (i == n-1 && j != 0 && colSums[j-1] != k) return; // Si estoy en la ultila fila chequeo que las columnas estén bien
 
-    if (j != 0 && colSums[j-1] > k) return 0; // Chequeo columnas
+    if (j != 0 && colSums[j-1] > k) return; // Chequeo columnas
 
-    if (rowSum >= k) return 0; // Si me pasé con la fila
+    if (rowSum >= k) return; // Si me pasé con la fila
 
-    if (diagSums[0] > k || diagSums[1] > k) return 0; // Si me paso con una diagonal
+    if (diagSums[0] > k || diagSums[1] > k) return; // Si me paso con una diagonal
 
-    if (matrix[n-1][n-1] == 0 && diagSums[0] == k) return 0; // Si una diagonal es k pero no la completé
+    if (matrix[n-1][n-1] == 0 && diagSums[0] == k) return; // Si una diagonal es k pero no la completé
 
-    if (matrix[n-1][0] == 0 && diagSums[1] == k) return 0; // Si una diagonal es k pero no la completé
+    if (matrix[n-1][0] == 0 && diagSums[1] == k) return; // Si una diagonal es k pero no la completé
 
-    if (!canComplete(i, j, rowSum)) return 0; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
+    //if (!canComplete(i, j, rowSum)) return; // Poda para ver si con los mínimos elementos disponibles puedo no pasarme
 
-    int res = 0;
     // Notar que las soluciones se intentan en orden y se guardan en orden
-    for (int idx = 0; idx < isThisNumberUsed.size(); idx++) {
+    for (int idx = 0; idx < n*n; idx++) {
         if (isThisNumberUsed[idx] == false) { // ¿Está en uso idx+1 en esta rama?
             matrix[i][j] = idx + 1;
             isThisNumberUsed[idx] = true; // idx + 1 en uso
             colSums[j] += idx + 1;
             if (i == j) diagSums[0] += idx + 1;
             if (n - 1 - i == j) diagSums[1] += idx + 1;
-            res += cuadradoMagico(i, j + 1, rowSum + idx + 1);
+            cuadradoMagico(i, j + 1, rowSum + idx + 1);
             colSums[j] -= idx + 1; // Backtrack
             if (i == j) diagSums[0] -= idx + 1; // Backtrack
             if (n - 1 - i == j) diagSums[1] -= idx + 1; // Backtrack
@@ -99,20 +106,17 @@ int cuadradoMagico(int i, int j, int rowSum) {
             isThisNumberUsed[idx] = false; // Backtrack
         }
     }
-    return res;
 }
 
 int main(int argc, char** argv) {
-    int solNumber;
-    cin >> n >> solNumber;
+    cin >> n >> targetSolution;
     k = (n * n * n + n) / 2;
     colSums = vector<int> (n, 0);
     matrix = vector<vector<int>>(n, vector<int>(n, 0));
     isThisNumberUsed = vector<bool>(n * n, false);
     cuadradoMagico(0, 0, 0);
-    //cout << "There are " << solutions.size() << " magic squares of size " << n << endl;
-    if (solNumber > solutions.size())
+    if (targetSolution != foundSolutions)
         cout << "-1" << endl;
-    else printMatrix(solutions[solNumber-1]);
+    else printMatrix(solution);
     return 0;
 }
