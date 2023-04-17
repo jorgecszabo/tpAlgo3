@@ -8,8 +8,17 @@ struct actividad {
     int si, ti, indiceOriginal;
 };
 
-bool porSegundaComponente(actividad a, actividad b) {
-    return a.ti < b.ti;
+void bucketSortSegundaComponente(int n, vector<actividad> &v) {
+    vector<list<actividad>> bucket(2*n); // Buckets de tamaño 1
+    for (int i = 0; i < v.size(); i++)
+        bucket[v[i].ti - 1].push_back(v[i]);
+    int i = 0;
+    // O(n) ya que Σ |lista| ∈ bucket = n
+    for (list<actividad> &l : bucket)
+        for (actividad &a : l) {
+            v[i] = a;
+            i++;
+        }
 }
 
 int main() {
@@ -22,8 +31,8 @@ int main() {
         ai.indiceOriginal = i;
         A[i] = ai;
     }
-    // O(nlogn)
-    sort(A.begin(), A.end(), porSegundaComponente);
+    // O(n)
+    bucketSortSegundaComponente(n, A);
     // Subconjunto S de A con maxima cardinalidad, sin solapamientos. Solo guarda los indices de A que corresponden a cada actividad.
     list<int> S = {};
     // cuando termina ultima actividad.
