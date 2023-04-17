@@ -1,5 +1,5 @@
 /*
- * Complejidad del algoritmo: O(nLogn)
+ * Complejidad del algoritmo: O(n)
  */
 #include <bits/stdc++.h>
 using namespace std;
