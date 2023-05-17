@@ -1,0 +1,3 @@
+/home/marcos/tp3/tp2/1-juego-para-dos/JuegoParaDos/CMakeFiles/JuegoParaDos.dir
+/home/marcos/tp3/tp2/1-juego-para-dos/JuegoParaDos/CMakeFiles/edit_cache.dir
+/home/marcos/tp3/tp2/1-juego-para-dos/JuegoParaDos/CMakeFiles/rebuild_cache.dir
