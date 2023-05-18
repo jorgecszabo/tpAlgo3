@@ -72,7 +72,7 @@ double solve() {
     // la arista 2 con la 3, 4, 5, ..., n
     // hasta la arista n-1 con la n
     // es decir Σ (1 <= i < n) i
-    int posibles = ((n-1)*(n))/2;
+    double posibles = ((double) (n-1) * (double) (n)) / 2.0;
 
     // quitar puentes
     for (auto [v, w] : puentes) {
@@ -97,14 +97,14 @@ double solve() {
     }
 
     // calcular porbabilidades
-    int posiblesJugadasMalas = 0;
+    double posiblesJugadasMalas = 0.0;
     int vertices = n;
     for (auto e : tamPorComponente) {
         posiblesJugadasMalas += e * (vertices - e); // cada vertice de una cc con cualquiera de otra cc es una mala jugada
         vertices -= e;
     }
 
-    return (double) ((double) posiblesJugadasMalas / (double) posibles);
+    return posiblesJugadasMalas / posibles;
 }
 
 int main() {
