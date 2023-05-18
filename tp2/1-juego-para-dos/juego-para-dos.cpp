@@ -9,7 +9,6 @@ vector<int> tiempo, low;
 int timer;
 
 vector<tuple<int, int>> puentes;
-unsigned long long int x =0;
 
 void puente(int v, int w) {
     puentes.push_back(make_tuple(v,w));
@@ -23,7 +22,7 @@ void dfs(int u, int p) {
         if (v == p) continue;
         if (tiempo[v] == 0) { // v no descubierto
             dfs(v, u);
-            if (tiempo[u] < low[v]) {
+            if (tiempo[u] < low[v]) { // v no podría haber sido descubierta antes
                 puente(v, u);
             }
             low[u] = min(low[u], low[v]);
@@ -37,9 +36,8 @@ void hallar_puentes() {
     timer = 0;
     visitado.assign(n, false);
     tiempo.assign(n, 0);
-    low.assign(n+1, -1);
+    low.assign(n, -1);
     puentes.clear();
-    x=0;
     for (int i=0; i < n; i++) {
         if (!tiempo[i])
             dfs(i, i);
@@ -56,16 +54,16 @@ void dfsContar(int v, int& count) {
 }
 
 //double solve() {
-float solve() {
+double solve() {
     cin >> n >> m;
-    int v, w;
+    int v1, v2;
     adj.assign(n, {});
     for (int i=0; i<m ; i++) {
-        cin >> v >> w;
-        v--;
-        w--;
-        adj[v].push_back(w);
-        adj[w].push_back(v);
+        cin >> v1 >> v2;
+        v1--;
+        v2--;
+        adj[v1].push_back(v2);
+        adj[v2].push_back(v1);
     }
 
     hallar_puentes();
@@ -74,7 +72,7 @@ float solve() {
     // la arista 2 con la 3, 4, 5, ..., n
     // hasta la arista n-1 con la n
     // es decir Σ (1 <= i < n) i
-    float posibles = ((n-1)*(n))/2;
+    int posibles = ((n-1)*(n))/2;
 
     // quitar puentes
     for (auto [v, w] : puentes) {
@@ -102,15 +100,15 @@ float solve() {
     int posiblesJugadasMalas = 0;
     int vertices = n;
     for (auto e : tamPorComponente) {
-        posiblesJugadasMalas += e * (vertices - e);
+        posiblesJugadasMalas += e * (vertices - e); // cada vertice de una cc con cualquiera de otra cc es una mala jugada
         vertices -= e;
     }
 
-    return (float) ((float) posiblesJugadasMalas / posibles);
+    return (double) ((double) posiblesJugadasMalas / (double) posibles);
 }
 
 int main() {
-    float res = solve();
+    double res = solve();
     cout << setprecision(5) << fixed;
     cout << res << endl;
     return 0;
