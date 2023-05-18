@@ -79,13 +79,11 @@ double solve() {
         for (int i=0; i < adj[v].size(); i++) {
             if (adj[v][i] == w) {
                 adj[v].erase(adj[v].begin() + i);
-                i--;
             }
         }
     }
 
     // contar tam de cada componente conexa
-    visitado.clear();
     visitado.assign(n, false);
     vector<int> tamPorComponente;
     for (int i=0; i < n; i++) {
