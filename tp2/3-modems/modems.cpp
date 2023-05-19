@@ -37,7 +37,7 @@ struct DSU{
     vector<int> rank;
 };
 
-tuple<double, double> solve(vector<tuple<int,int,double>> &listaAristas, int n, int cantModem, int costoUTP, int limitUTP, int costoFibra) {
+tuple<double, double> solve(vector<tuple<int,int,double>> &listaAristas, int n, int cantModem, int costoUTP, double limitUTP, int costoFibra) {
     sort(listaAristas.begin(),listaAristas.end(), tercerElemento);
     int tamBosque = n;
     double acumUTP = 0;
@@ -48,8 +48,11 @@ tuple<double, double> solve(vector<tuple<int,int,double>> &listaAristas, int n, 
         if(dsu.find(u) != dsu.find(v)){
             dsu.unite(u,v);
             tamBosque--;
-            if (d > (double) limitUTP) acumFibra += d * costoFibra;
-            else acumUTP += d * costoUTP;
+            if (d > limitUTP) {
+                acumFibra += d * costoFibra;
+            } else {
+                acumUTP += d * costoUTP;
+            }
         }
         if (tamBosque == cantModem) break;
     }
