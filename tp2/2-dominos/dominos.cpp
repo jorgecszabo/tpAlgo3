@@ -2,110 +2,92 @@
 
 using namespace std;
 
-#define PROCESADO 1
-#define EN_PROCESO 2
-#define SIN_VISITAR 3
-
 int n, m;
 vector<vector<int>> adj;
-vector<int> visitado;
-vector<tuple<int,int>> aristasCiclo;
-stack<int> ordenTopologico;
+vector<vector<int>> adjT;
+vector<bool> visitado;
+set<int> res;
+stack<int> ordenDFS;
+vector<int> componenteActual;
 
-void ciclo(int u, int v) {
-    aristasCiclo.emplace_back(u,v);
+void dfsOrden(int v, const vector<vector<int>> &aristas) {
+    visitado[v] = true;
+    for (int w : aristas[v]) {
+        if (!visitado[w])
+            dfsOrden(w, aristas);
+    }
+    ordenDFS.push(v);
 }
 
-void dfsCiclos(int v, int p = -1) {
-    visitado[v] = EN_PROCESO;
-    for (int w : adj[v]) {
-        if (w == p) continue;
-        if (visitado[w] == SIN_VISITAR)
-            dfsCiclos(w, v);
-        if (visitado[w] == EN_PROCESO) // Esta arista forma un ciclo
-            ciclo(v,w);
+void dfs(int v, const vector<vector<int>> &aristas) {
+    visitado[v] = true;
+    componenteActual.push_back(v);
+    for (int w : aristas[v]) {
+        if (!visitado[w])
+            dfs(w, aristas);
     }
-    visitado[v] = PROCESADO;
 }
 
-void dfsOrden(int v, int p = -1) { // precondición: el grafo no debe tener ciclos
-    visitado[v] = EN_PROCESO;
-    for (int w : adj[v]) {
-        if (w == p) continue;
-        if (visitado[w] == SIN_VISITAR)
-            dfsOrden(w, v);
-    }
-    ordenTopologico.push(v);
-    visitado[v] = PROCESADO;
-}
 
-void dfsComponente(int v, int p = -1) { // precondición: el grafo no debe tener ciclos
-    visitado[v] = EN_PROCESO;
+void dfsDomino(int v, vector<int> &menores, const vector<vector<int>> &aristas) {
+    visitado[v] = true;
     for (int w : adj[v]) {
-        if (w == p) continue;
-        if (visitado[w] == SIN_VISITAR)
-            dfsComponente(w, v);
+        if (!visitado[w])
+            dfsDomino(w, menores, aristas);
+        else if (res.count(w) > 0) {
+            menores.push_back(w);
+        }
     }
-    visitado[v] = PROCESADO;
 }
 
 void solve() {
     cin >> n >> m;
     int v1, v2;
-    adj.assign(n, {});
+    adj.assign(n+1, {});
+    adjT.assign(n+1, {});
+
     for (int i=0; i<m ; i++) {
         cin >> v1 >> v2;
-        v1--;
-        v2--;
         adj[v1].push_back(v2);
+        adjT[v2].push_back(v2);
     }
 
-    // me guardo las aristas que forman un ciclo en el grafo
-    aristasCiclo.clear();
-    visitado.assign(n, SIN_VISITAR);
-    for (int i = 0; i < n; i++) { // empiezo dfs del vértice 0 para encontrar el camino sin ciclos lexicograficamente más chico
-        if (visitado[i] == SIN_VISITAR)
-            dfsCiclos(i);
+    // Algoritmo de Korasaju para encontrar componentes fuertemente conexas
+    visitado.assign(n+1, false); // Primer recorrido, deja el stack en orden
+    for (int i=1; i<=n; i++)
+        if (!visitado[i]) dfsOrden(i, adj);
+
+    vector<int> minDeCadaCFC;
+    visitado.assign(n+1, false);
+    while (!ordenDFS.empty()) {
+        int u = ordenDFS.top();
+        if (!visitado[u]) {
+            componenteActual.clear();
+            dfs(u, adjT); // componente = {v1, ..., vi}
+            int raiz = *min_element(componenteActual.begin(), componenteActual.end()); // lineal
+            minDeCadaCFC.push_back(raiz);
+        }
+        ordenDFS.pop();
     }
-    // elimino los ciclos del grafo
-    for (auto [v, w] : aristasCiclo) {
-        for (int i=0; i < adj[v].size(); i++) {
-            if (adj[v][i] == w) {
-                adj[v].erase(adj[v].begin() + i);
-                i--;
+
+    // Algoritmo que halla subconjunto minimo de piezas de domino en orden lexicografico
+    visitado.assign(n+1, false);
+    for (int i : minDeCadaCFC) {
+        if (!visitado[i]) {
+            vector<int> menores;
+            dfsDomino(i, menores, adj);
+            // Si encontramos alguno que estaba cubierto lo quitamos
+            if (!menores.empty()) {
+                for (auto x : menores) res.erase(x);
             }
+            res.insert(i);
         }
     }
-    // Busco el órden topológico del grafo
-    ordenTopologico = stack<int>();
-    visitado.assign(n, SIN_VISITAR);
-    for (int i = 0; i < n; i++) {
-        if (visitado[i] == SIN_VISITAR) {
-            dfsOrden(i);
-        }
-    }
-    // busco la cantidad de componentes conexas y a que componente pertenece la pieza que Tuki necesita empujar
-    int componente = 0;
-    visitado.assign(n, SIN_VISITAR);
-    vector<int> res;
-    while (!ordenTopologico.empty()) {
-        int u = ordenTopologico.top();
-        if (visitado[u] == SIN_VISITAR) {
-            dfsComponente(u);
-            componente++;
-            res.push_back(u);
-        }
-        ordenTopologico.pop();
-    }
-
-    // ordeno de menor a mayor e imprimo el resulardo en la consola
-    sort(res.begin(), res.end());
-    cout << res.size() << endl;
-    for (int i = 0; i < res.size()-1; i++) cout << res[i] + 1 << " ";
-    cout << res[res.size()-1] + 1 << endl;
 }
 
 int main() {
     solve();
-    return 0;
+    cout << res.size() << endl;
+    for (auto x : res) cout << x << ' ';
+    cout << endl;
 }
