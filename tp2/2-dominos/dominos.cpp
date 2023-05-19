@@ -31,7 +31,7 @@ void dfs(int v, const vector<vector<int>> &aristas) {
 
 void dfsDomino(int v, vector<int> &menores, const vector<vector<int>> &aristas) {
     visitado[v] = true;
-    for (int w : adj[v]) {
+    for (int w : aristas[v]) {
         if (!visitado[w])
             dfsDomino(w, menores, aristas);
         else if (res.count(w) > 0) {
