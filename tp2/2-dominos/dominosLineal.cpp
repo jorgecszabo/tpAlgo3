@@ -9,13 +9,14 @@ vector<int> verticesEnComponente;
 vector<bool> visitado;
 stack<int> ordenDFS;
 
-void countingSortSinRepetidos(vector<int> &v) {
-    vector<int> buckets(n+1, -1); // no puede haber un nodo -1
-    for (int e : v) buckets[e] = e;
+void countingSort(vector<int> &v) {
+    vector<int> buckets(n+1, 0);
+    for (int e : v) buckets[e]++;
     vector<int>::iterator it = v.begin();
-    for (int e : buckets) {
-        if (e != -1) {
-            *it = e;
+    for (int i = 0; i < buckets.size(); i++) {
+        while (buckets[i] != 0) {
+            *it = i;
+            buckets[i]--;
             ++it;
         }
     }
@@ -103,7 +104,7 @@ void solve() {
         if (gradoDeEntrada[u] == 0 && enGrafoCondensado[u]) res.push_back(u);
 
     // ordeno de menor a mayor e imprimo el resulardo en la consola
-    countingSortSinRepetidos(res); // seguro es más lento que el sort de la stdlib pero es estrictamente O(n) :)
+    countingSort(res); // seguro es más lento que el sort de la stdlib pero es estrictamente O(n) :)
     cout << res.size() << endl;
     for (auto e : res) cout << e + 1 << " ";
     cout << endl;
