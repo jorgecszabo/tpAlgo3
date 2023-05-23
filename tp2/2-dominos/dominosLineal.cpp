@@ -9,19 +9,6 @@ vector<int> verticesEnComponente;
 vector<bool> visitado;
 stack<int> ordenDFS;
 
-void countingSort(vector<int> &v) {
-    vector<int> buckets(n+1, 0);
-    for (int e : v) buckets[e]++;
-    vector<int>::iterator it = v.begin();
-    for (int i = 0; i < buckets.size(); i++) {
-        while (buckets[i] != 0) {
-            *it = i;
-            buckets[i]--;
-            ++it;
-        }
-    }
-}
-
 void dfsOrden(const vector<vector<int>> &aristas, int v) {
     visitado[v] = true;
     for (int w : adj[v]) {
@@ -93,7 +80,7 @@ void solve() {
     // Ahora, los vértices en este grafo condensado con grado de entrada 0 son los que Tuki debe empujar
     vector<int> gradoDeEntrada(n, 0);
     vector<int> res; // Usar la estructura set<int> en la práctica termina siendo más rapido que ordenar un vector. Pero es O(n log(n)) en el peor caso.
-    for (int u = 0; u < n; u++) {
+    for (int u = 0; u < n; u++) { // Notar que los vértices se recorren en órden y se agregan en órden al vector res
         if (!enGrafoCondensado[u]) continue;
         for (int v : grafoCondensado[u]) {
             gradoDeEntrada[v]++; // arista u --> v
@@ -103,8 +90,7 @@ void solve() {
     for (int u = 0; u < n; u++)
         if (gradoDeEntrada[u] == 0 && enGrafoCondensado[u]) res.push_back(u);
 
-    // ordeno de menor a mayor e imprimo el resulardo en la consola
-    countingSort(res); // seguro es más lento que el sort de la stdlib pero es estrictamente O(n) :)
+    // imprimo el resulardo en la consola
     cout << res.size() << endl;
     for (auto e : res) cout << e + 1 << " ";
     cout << endl;
