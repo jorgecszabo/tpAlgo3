@@ -79,7 +79,7 @@ void solve() {
     }
     // Ahora, los vértices en este grafo condensado con grado de entrada 0 son los que Tuki debe empujar
     vector<int> gradoDeEntrada(n, 0);
-    vector<int> res; // Usar la estructura set<int> en la práctica termina siendo más rapido que ordenar un vector. Pero es O(n log(n)) en el peor caso.
+    vector<int> res;
     for (int u = 0; u < n; u++) { // Notar que los vértices se recorren en órden y se agregan en órden al vector res
         if (!enGrafoCondensado[u]) continue;
         for (int v : grafoCondensado[u]) {
