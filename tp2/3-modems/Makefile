@@ -1,4 +1,4 @@
-SOURCE = dominosLineal.cpp
+SOURCE = modems.cpp
 
 exe: $(SOURCE)
 	g++ -O0 -g $(SOURCE) -o $@
@@ -9,8 +9,3 @@ clean:
 
 run: exe
 	./exe < test1
-	./exe < test2
-	./exe < test3
-	./exe < test4
-	./exe < test5
-
