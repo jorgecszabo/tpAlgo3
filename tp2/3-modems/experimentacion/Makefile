@@ -2,7 +2,6 @@ CXX := g++
 CXXFLAGS := -O3 -march=native
 
 IN = $(wildcard implementaciones/*.cpp)
-#OUT = $(subst .cpp,,$(IN))
 PRE = $(patsubst %.cpp,%.o,$(IN))
 OUT  = $(patsubst implementaciones/%,binarios/%, $(PRE))
 
@@ -10,8 +9,10 @@ binarios/%: implementaciones/%
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 default: $(OUT)
+	python create-random-input.py
+	python create-path-input.py
 
-.PHONY: clean
+.PHONY: clean run
 clean:
 	rm ./binarios/*
 	touch ./binarios/nodelete
@@ -19,3 +20,6 @@ clean:
 	touch ./inputs/nodelete
 	rm ./runtime-data/*
 	touch ./runtime-data/nodelete
+
+run: default
+	./run-random.sh

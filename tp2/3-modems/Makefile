@@ -1,7 +1,7 @@
 SOURCE = modems.cpp
 
 exe: $(SOURCE)
-	g++ -O0 -g $(SOURCE) -o $@
+	g++ -O2 $(SOURCE) -o $@
 
 .PHONY: clean, run
 clean:

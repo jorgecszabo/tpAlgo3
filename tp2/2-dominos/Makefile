@@ -1,7 +1,7 @@
 SOURCE = dominosLineal.cpp
 
 exe: $(SOURCE)
-	g++ -O0 -g $(SOURCE) -o $@
+	g++ -O2 $(SOURCE) -o $@
 
 .PHONY: clean, run
 clean:
@@ -13,4 +13,3 @@ run: exe
 	./exe < test3
 	./exe < test4
 	./exe < test5
-
