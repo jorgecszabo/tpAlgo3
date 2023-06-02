@@ -12,7 +12,7 @@ vector<unsigned long int> dijkstra(const vector<vector<pair<int, int>>> &adj, in
     vector<unsigned long int> distance(n+1, INF);
     vector<bool> processed(n+1, false);
     distance[x] = 0;
-    priority_queue<pair<unsigned long int, int>> q;
+    priority_queue<pair<long int, int>> q;
     q.emplace(0,x);
     while (!q.empty()) {
         int a = q.top().second;
