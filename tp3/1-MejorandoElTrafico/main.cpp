@@ -3,27 +3,27 @@
 #include <queue>
 #include <tuple>
 
-const unsigned long int INF = 1000*(10e5);
+const long long int INF = 1000*(10e6);
 
 using namespace std;
 
-vector<unsigned long int> dijkstra(const vector<vector<pair<int, int>>> &adj, int x) {
+vector<long long int> dijkstra(const vector<vector<pair<int, int>>> &adj, int x) {
     unsigned int n = adj.size();
-    vector<unsigned long int> distance(n+1, INF);
+    vector<long long int> distance(n+1, INF);
     vector<bool> processed(n+1, false);
     distance[x] = 0;
-    priority_queue<pair<long int, int>> q;
+    priority_queue<pair<long long int, int>> q;
     q.emplace(0,x);
     while (!q.empty()) {
         int a = q.top().second;
         q.pop();
         if (processed[a]) continue;
         processed[a] = true;
-        for (auto u : adj[a]) {
+        for (auto const &u : adj[a]) {
             int b = u.first; int w = u.second;
             if (distance[a] + w < distance[b]) { // relajación
                 distance[b] = distance[a] + w;
-                q.emplace(-distance[b],b);
+                q.emplace(-distance[b],b); // para usar una max queue como si fuera una min queue
             }
         }
     }
@@ -41,14 +41,15 @@ int main() {
             int u, v, w;
             cin >> u >> v >> w;
             adj[u].emplace_back(v, w);
-            adj[u+n].emplace_back(v+n, w);
+            adj[u+n].emplace_back(v+n,w);
         }
         while (k--) {
             int u, v, w;
             cin >> u >> v >> w;
             adj[u].emplace_back(v+n, w);
+            adj[v].emplace_back(u+n, w);
         }
-        vector<unsigned long int> dist = dijkstra(adj, s);
+        vector<long long int> dist = dijkstra(adj, s);
         cout << ((min(dist[t], dist[t+n]) == INF) ? -1 : min(dist[t], dist[t+n])) << endl;
     }
     return 0;
