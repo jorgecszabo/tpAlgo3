@@ -2,13 +2,37 @@
 
 using namespace std;
 
-int INF = 10e7;
+const int INF = 10e7;
 
 #define PRIM 1
 #define KRUSKAL 0
 
 vector<vector<int>> capacity;
 vector<vector<int>> adj;
+
+int dfs(int s, int t, vector<int>& parent) {
+    fill(parent.begin(), parent.end(), -1);
+    parent[s] = -2;
+    stack<pair<int, int>> S;
+    S.emplace(s, INF);
+
+    while (!S.empty()) {
+        int cur = S.top().first;
+        int flow = S.top().second;
+        S.pop();
+
+        for (int next : adj[cur]) {
+            if (parent[next] == -1 && capacity[cur][next]) {
+                parent[next] = cur;
+                int new_flow = min(flow, capacity[cur][next]);
+                if (next == t)
+                    return new_flow;
+                S.emplace(next, new_flow);
+            }
+        }
+    }
+    return 0;
+}
 
 int bfs(int s, int t, vector<int>& parent) {
     fill(parent.begin(), parent.end(), -1);
@@ -38,8 +62,11 @@ int maxflow(int s, int t) {
     int flow = 0;
     vector<int> parent(adj.size());
     int new_flow;
-
-    while (new_flow = bfs(s, t, parent)) {
+    /*
+     * usar dfs tiene más sentido en este caso ya que la cota superior de flujo es n.
+     * Se cumple que n < m^2.
+     */
+    while (new_flow = dfs(s, t, parent)) {
         flow += new_flow;
         int cur = t;
         while (cur != s) {
