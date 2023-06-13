@@ -111,6 +111,13 @@ int main() {
             adj[v].push_back(u);
             capacity[v][u] = 1;
         }
+        /*
+         * Al calcular el flujo máximo de s a t en este modelo se calcula la cantidad de caminos de s a t
+         * que no comparten ningúna arista. Ya que el límite de flujo de todas las aristas es de 1.
+         * Como s apunta a todos los que votaron Prim y todos los que votaron Kruskal apuntan a t,
+         * cada uno de estos caminos existe solo si hay una arista que conecte un votante de Prim con uno de Kruskal.
+         * Estas aristas representan la disconformidad que se causa entre los alumnos.
+        */
         cout << maxflow(0, adj.size()-1) << endl;
         cin >> n >> m;
     }
