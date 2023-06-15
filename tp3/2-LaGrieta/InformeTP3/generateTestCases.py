@@ -15,7 +15,10 @@ f.write(str(len(step)) + "\n")
 #genero casos de test para grafos ralos
 
 for i in step:
-    randSampleGraph = np.random.randint(1,i+1, size=(i*2, 3))
+    if i*2 < 10**5:
+        randSampleGraph = np.random.randint(1,i+1, size=(i*2, 3))
+    else:
+        randSampleGraph = np.random.randint(1,i+1, size=(10**5, 3))
     if i//2 < 300:
         randSampleAdded = np.random.randint(1,i+1, size=(i//2, 3))
     else:
@@ -25,12 +28,14 @@ for i in step:
         f.write(str(e[0]) + " " + str(e[1]) + " " +str(e[2]) + "\n")
     for e in randSampleAdded:
         f.write(str(e[0]) + " " + str(e[1]) + " " +str(e[2]) + "\n")
+"""
 
-
-""""
-#genero casos de test para grafos ralos
+#genero casos de test para grafos densos
 for i in step:
-    randSampleGraph = np.random.randint(1,i+1, size=((i**2)//2, 3))
+    if (i**2)//2 < 10**5:
+        randSampleGraph = np.random.randint(1,i+1, size=((i**2)//2, 3))
+    else:
+        randSampleGraph = np.random.randint(1,i+1, size=(10**5, 3))
     if i//2 < 300:
         randSampleAdded = np.random.randint(1,i+1, size=(i//2, 3))
     else:
